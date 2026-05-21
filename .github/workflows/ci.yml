@@ -16,15 +16,19 @@
 
 name: Java CI
 
-on: [push, pull_request]
+on: [push, pull_request, workflow_dispatch]
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        java: [ 8, 11, 17, 21]
-        distribution: [ 'adopt' ]
+        java: [8, 11, 17, 21]
+        distribution: ['adopt']
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-15-intel
       fail-fast: false
       max-parallel: 4
     name: Test JDK ${{ matrix.java }}
@@ -44,13 +48,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-m2
       - name: Chmod
-        run:  chmod +x mvnw
+        run: chmod +x mvnw
       - name: Test with Maven
         if: ${{ matrix.java == '8' }}
         run: ./mvnw test -B -Dmaven.test.skip=false
       - name: Test with Maven
         if: ${{ matrix.java != '8' }}
-        run: ./mvnw test -B -Dmaven.test.skip=false -DargLine="--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/sun.reflect.annotation=ALL-UNNAMED"
+        run: ./mvnw test -B -Dmaven.test.skip=false -DargLine="--add-opens=java.base/java.lang=ALL-UNNAMED 
+          --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/sun.reflect.annotation=ALL-UNNAMED"
       - name: Maven Build
         run: ./mvnw install -B -V
       - name: Java Doc
