@@ -1,5 +1,6 @@
 package com.alibaba.easyexcel.test.core.simple;
 
+import java.nio.charset.StandardCharsets;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -53,8 +54,8 @@ public class SimpleDataTest {
     }
 
     private void readAndWrite(File file) {
-        EasyExcel.write(file, SimpleData.class).sheet().doWrite(data());
-        EasyExcel.read(file, SimpleData.class, new SimpleDataListener()).sheet().doRead();
+        EasyExcel.write(file, SimpleData.class).charset(StandardCharsets.UTF_8).sheet().doWrite(data());
+        EasyExcel.read(file).charset(StandardCharsets.UTF_8).head(SimpleData.class).sheet().doReadSync();
     }
 
     @Test
